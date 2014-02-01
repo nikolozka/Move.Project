@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Move.</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_sign_in">SignIn</string>
+    <string name="title_activity_start_page">StartPage</string>
+    <string name="move">Move.</string>
+
+    <color name="blue">#20B2AA</color>
+    <color name="grey">#C8C8C8</color>
+
+    <string name="title_activity_map">MapActivity</string>
+
+</resources>
