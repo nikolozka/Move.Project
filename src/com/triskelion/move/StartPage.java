@@ -8,13 +8,17 @@ import android.view.View;
 import android.widget.TextView;
 
 public class StartPage extends Activity {
+	
+	private static int score=0;
+	private final static int threshold=4;
+	private static TextView view;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start_page);
-		TextView view = (TextView)findViewById(R.id.story);
-		view.setText("Lorem ipsum \nLorem Lorem \nipsum ipsum \nLorem ipsum");
+		view = (TextView)findViewById(R.id.story);
+		
 	}
 
 	@Override
@@ -32,5 +36,17 @@ public class StartPage extends Activity {
         Intent intent = new Intent(this, Story.class);
         startActivity(intent);
     }
+	
+	public static void setScore(int ss){
+		score=ss;
+		if (ss>threshold){
+			showText();
+		}
+	}
+	
+	private static void showText(){
+		
+		view.setText("Lorem ipsum \nLorem Lorem \nipsum ipsum \nLorem ipsum");		
+	}
 
 }
