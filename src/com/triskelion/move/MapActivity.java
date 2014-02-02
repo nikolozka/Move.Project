@@ -3,11 +3,13 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -223,6 +225,14 @@ private boolean isInReach(LatLng locs){
 
 public static int getScore(){
 	return score;
+}
+
+@Override
+public void onBackPressed() {
+   Log.d("CDA", "onBackPressed Called");
+   Intent setIntent = new Intent(this, StartPage.class);
+   setIntent.putExtra("score", score);   
+   startActivity(setIntent);
 }
 
 

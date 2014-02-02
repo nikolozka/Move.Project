@@ -18,6 +18,11 @@ public class StartPage extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start_page);
 		view = (TextView)findViewById(R.id.story);
+		Intent intent = getIntent();
+		score=intent.getIntExtra("score", 0);
+		if (score>threshold){
+			showText();
+			}
 		
 	}
 
@@ -47,12 +52,9 @@ public class StartPage extends Activity {
 		view.setText("Lorem ipsum \nLorem Lorem \nipsum ipsum \nLorem ipsum");		
 	}
 	
-	@Override
-	public void onResume(){
-		super.onResume();
-		if (score>threshold){
-			showText();
-		}
-	}
+	
+		
+		
+	
 
 }
