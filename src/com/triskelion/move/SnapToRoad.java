@@ -3,8 +3,12 @@ package com.triskelion.move;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -20,7 +24,10 @@ private static final String TAG = SnapToRoad.class.getSimpleName();
 private double lat;
 private double lng;
 
-private LatLng latLng=null;
+private double newLat;
+private double newLng;
+
+private LatLng latLng;
 
 
 
@@ -48,9 +55,31 @@ protected Void doInBackground(Void... params) {
             while ((read = rd.read(buf)) > 0) {
                 sb.append(buf, 0, read);
             }
-            SimpleXmlPullApp pullApp = new SimpleXmlPullApp(sb.toString());
-            latLng=pullApp.pull();
-            //Log.v(TAG, sb.toString());
+            
+            XmlPullParserFactory xmlFactoryObject = XmlPullParserFactory.newInstance();
+            XmlPullParser myParser = xmlFactoryObject.newPullParser();
+            myParser.setInput(new StringReader(sb.toString()));
+            
+            int event = myParser.getEventType();
+            while (event != XmlPullParser.END_DOCUMENT) 
+            {
+               String name=myParser.getName();               
+                  if(event==XmlPullParser.START_TAG){
+                	  if(name.equals("end_location")){
+                		  newLat=Double.parseDouble(myParser.nextText());
+                          
+                          
+                      
+                      
+                      }
+
+                  
+               }		 
+               event = myParser.next(); 					
+            }
+
+
+            Log.v(TAG, sb.toString());
             
         } 
         con.disconnect();
