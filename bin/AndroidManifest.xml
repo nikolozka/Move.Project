@@ -20,7 +20,7 @@
         android:required="true" />
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="19" />
 
     <application
@@ -30,7 +30,11 @@
         android:theme="@style/AppTheme" >
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyBqcTIyf0C7nObg3asBIchQqLn-vNmIt4c" />
+            android:value="AIzaSyDN4rcpr0yR_CWgrT6dcCIyD1sLl3o2YJk" />
+        
+        <meta-data
+    		android:name="com.google.android.gms.version"
+    		android:value="@integer/google_play_services_version" />
 
         <activity
             android:name="com.triskelion.move.Loader"
