@@ -3,25 +3,25 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapActivity extends Activity implements LocationListener{
@@ -31,9 +31,12 @@ public class MapActivity extends Activity implements LocationListener{
   private LocationManager locationManager;
   private static final long MIN_TIME = 400;
   private static final float MIN_DISTANCE = 1000;
-  private ArrayList<LatLng> locations = new ArrayList<LatLng>();
+  private LatLng location;
+  private Location lc;
   private ArrayList<LatLng> points = new ArrayList<LatLng>();
+  private ArrayList<Marker> markers = new ArrayList<Marker>();
   private double Radius;
+  private int score;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,12 +46,12 @@ public class MapActivity extends Activity implements LocationListener{
             .getMap();
     locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this); 
-    map.setOnMapClickListener(listener);
+    //map.setOnMapClickListener(listener);
     bar = (SeekBar) findViewById(R.id.seekBar1);
     bar.setOnSeekBarChangeListener(barListener);
   }
   
-  OnMapClickListener listener = new OnMapClickListener(){
+  /*OnMapClickListener listener = new OnMapClickListener(){
 
 	@Override
 	public void onMapClick(LatLng location) {
@@ -64,7 +67,7 @@ public class MapActivity extends Activity implements LocationListener{
 		
 	}
 	  
-  };
+  };*/
   
   OnSeekBarChangeListener barListener = new OnSeekBarChangeListener(){
 	  
@@ -95,14 +98,17 @@ public class MapActivity extends Activity implements LocationListener{
   }
   
   public void generate(View view){
-	  double lat = locations.get(0).latitude;
-	  double lon = locations.get(0).longitude;
+	  Button btn = (Button) findViewById(R.id.button1);
+	  btn.setActivated(false);
+	  double lat = location.latitude;
+	  double lon = location.longitude;
 	  for(int i=0; i<Radius; i++){
-		  locations.add(new LatLng((lat+(Math.pow(-1, (int)(Math.random()*5)))*Math.random()*Radius/5000),lon+(Math.pow(-1, (int)(Math.random()*5)))*Math.random()*Radius/5000));		  
-		  map.addMarker(new MarkerOptions()
-		  .position(locations.get(i))
+		  points.add(new LatLng((lat+(Math.pow(-1, (int)(Math.random()*5)))*Math.random()*Radius/5000),lon+(Math.pow(-1, (int)(Math.random()*5)))*Math.random()*Radius/5000));		  
+		  Marker marker = map.addMarker(new MarkerOptions()
+		  .position(points.get(i))
 			.icon(BitmapDescriptorFactory.defaultMarker())
 		);
+		  markers.add(marker);
 	  }
 	  
 		  
@@ -139,15 +145,28 @@ public class MapActivity extends Activity implements LocationListener{
 @Override
 public void onLocationChanged(Location location) {
 	// TODO Auto-generated method stub
+	lc=location;
     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-    locations.add(latLng);
+    this.location=latLng;
     map.addMarker(new MarkerOptions()
     	.position(latLng)
-    	.icon(BitmapDescriptorFactory.defaultMarker())
+    	.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
     	.title("Move."));
     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
     map.animateCamera(cameraUpdate);
     locationManager.removeUpdates(this);
+    for(int i=0; i<points.size(); i++){
+    	if(isInReach(points.get(i))){
+    		points.remove(i);
+    		score++;
+    		Context context = getApplicationContext();
+    		CharSequence text = "score: " + score;
+    		int duration = Toast.LENGTH_SHORT;
+
+    		Toast toast = Toast.makeText(context, text, duration);
+    		toast.show();
+    	}
+    }
 	
 }
 @Override
@@ -164,6 +183,16 @@ public void onProviderEnabled(String provider) {
 public void onStatusChanged(String provider, int status, Bundle extras) {
 	// TODO Auto-generated method stub
 	
+}
+
+private boolean isInReach(LatLng locs){
+	Location loc=new Location("");
+	loc.setLatitude(locs.latitude);
+	loc.setLongitude(locs.longitude);
+	if(lc.distanceTo(loc)<20){
+		return true;				
+	}
+	else return false;
 }
 
 
