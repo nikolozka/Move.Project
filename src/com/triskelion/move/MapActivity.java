@@ -43,13 +43,9 @@ public class MapActivity extends Activity implements LocationListener{
 
 	@Override
 	public void onMapClick(LatLng location) {
-		locations.add(location);
-		Context context = getApplicationContext();
-		CharSequence text = ("added"+location.latitude+" "+location.longitude);
-		int duration = Toast.LENGTH_SHORT;
-
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();
+		SnapToRoad snapper = new SnapToRoad(location);
+		snapper.execute();
+		
 	}
 	  
   };
@@ -86,5 +82,6 @@ public void onStatusChanged(String provider, int status, Bundle extras) {
 	// TODO Auto-generated method stub
 	
 }
+
 
 }
