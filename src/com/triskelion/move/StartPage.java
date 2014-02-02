@@ -39,14 +39,20 @@ public class StartPage extends Activity {
 	
 	public static void setScore(int ss){
 		score=ss;
-		if (ss>threshold){
-			showText();
-		}
+		
 	}
 	
 	private static void showText(){
 		
 		view.setText("Lorem ipsum \nLorem Lorem \nipsum ipsum \nLorem ipsum");		
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		if (score>threshold){
+			showText();
+		}
 	}
 
 }

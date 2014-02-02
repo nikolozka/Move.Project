@@ -39,7 +39,7 @@ public class MapActivity extends Activity implements LocationListener{
   private ArrayList<Marker> markers = new ArrayList<Marker>();
   private Marker userMarker;
   private double Radius;
-  private int score=0;
+  private static int score=0;
   private boolean zoom = false;
 
   @Override
@@ -53,7 +53,7 @@ public class MapActivity extends Activity implements LocationListener{
     criteria.setAccuracy(Criteria.ACCURACY_FINE);
     
     locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 5, 5, this); 
-    locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 75, 5, this); 
+    locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 5, 5, this); 
 
     //map.setOnMapClickListener(listener);
     bar = (SeekBar) findViewById(R.id.seekBar1);
@@ -186,6 +186,7 @@ public void onLocationChanged(Location location) {
     		markers.get(i).remove();
     		markers.remove(i);
     		points.remove(i);
+    		i--;
     		score++;
     		TextView view = (TextView)findViewById(R.id.editText1);
     		String sscore="score: "+score;
@@ -218,6 +219,10 @@ private boolean isInReach(LatLng locs){
 		return true;				
 	}
 	else return false;
+}
+
+public static int getScore(){
+	return score;
 }
 
 
