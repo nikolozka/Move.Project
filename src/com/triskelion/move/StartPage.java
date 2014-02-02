@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.TextView;
 
 public class StartPage extends Activity {
 
@@ -12,6 +13,8 @@ public class StartPage extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start_page);
+		TextView view = (TextView)findViewById(R.id.story);
+		view.setText("Lorem ipsum \nLorem Lorem \nipsum ipsum \nLorem ipsum");
 	}
 
 	@Override
@@ -23,6 +26,10 @@ public class StartPage extends Activity {
 	
 	public void map(View view){
         Intent intent = new Intent(this, MapActivity.class);
+        startActivity(intent);
+    }
+	public void story(View view){
+        Intent intent = new Intent(this, Story.class);
         startActivity(intent);
     }
 

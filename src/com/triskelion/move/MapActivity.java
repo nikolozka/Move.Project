@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -35,8 +36,10 @@ public class MapActivity extends Activity implements LocationListener{
   private Location lc;
   private ArrayList<LatLng> points = new ArrayList<LatLng>();
   private ArrayList<Marker> markers = new ArrayList<Marker>();
+  private Marker userMarker;
   private double Radius;
   private int score;
+  private boolean zoom = true;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +48,12 @@ public class MapActivity extends Activity implements LocationListener{
     map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
             .getMap();
     locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this); 
+    Criteria criteria = new Criteria();
+    criteria.setAccuracy(Criteria.ACCURACY_FINE);
+    
+    locationManager.requestLocationUpdates(locationManager.NETWORK_PROVIDER, 5, 5, this); 
+    locationManager.requestLocationUpdates(locationManager.GPS_PROVIDER, 75, 5, this); 
+
     //map.setOnMapClickListener(listener);
     bar = (SeekBar) findViewById(R.id.seekBar1);
     bar.setOnSeekBarChangeListener(barListener);
@@ -103,7 +111,9 @@ public class MapActivity extends Activity implements LocationListener{
 	  double lat = location.latitude;
 	  double lon = location.longitude;
 	  for(int i=0; i<Radius; i++){
-		  points.add(new LatLng((lat+(Math.pow(-1, (int)(Math.random()*5)))*Math.random()*Radius/5000),lon+(Math.pow(-1, (int)(Math.random()*5)))*Math.random()*Radius/5000));		  
+		  double dist = Math.random()*Radius/5000;
+		  double angle = Math.random()*360;
+		  points.add(new LatLng((lat+(dist*Math.cos(angle))),lon+(dist*Math.sin(angle))));		  
 		  Marker marker = map.addMarker(new MarkerOptions()
 		  .position(points.get(i))
 			.icon(BitmapDescriptorFactory.defaultMarker())
@@ -148,22 +158,39 @@ public void onLocationChanged(Location location) {
 	lc=location;
     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
     this.location=latLng;
-    map.addMarker(new MarkerOptions()
+    if(userMarker!=null) userMarker.remove();
+    userMarker=map.addMarker(new MarkerOptions()
     	.position(latLng)
     	.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
     	.title("Move."));
-    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+    CameraUpdate cameraUpdate;
+    if(!zoom){
+    	cameraUpdate= CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom);
+    	zoom=false;}
+    else{
+        cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);}
+
     map.animateCamera(cameraUpdate);
-    locationManager.removeUpdates(this);
+    userMarker.setPosition(this.location);
+    
+    Context context = getApplicationContext();
+	CharSequence text = "score: " + this.location;
+	int duration = Toast.LENGTH_SHORT;
+
+	Toast toast = Toast.makeText(context, text, duration);
+	toast.show();
+
     for(int i=0; i<points.size(); i++){
     	if(isInReach(points.get(i))){
+    		markers.get(i).remove();
+    		markers.remove(i);
     		points.remove(i);
     		score++;
-    		Context context = getApplicationContext();
-    		CharSequence text = "score: " + score;
-    		int duration = Toast.LENGTH_SHORT;
+    		Context context1 = getApplicationContext();
+    		CharSequence text1 = "score: " + score;
+    		int duration1 = Toast.LENGTH_SHORT;
 
-    		Toast toast = Toast.makeText(context, text, duration);
+    		Toast toast1 = Toast.makeText(context1, text1, duration1);
     		toast.show();
     	}
     }
@@ -189,7 +216,7 @@ private boolean isInReach(LatLng locs){
 	Location loc=new Location("");
 	loc.setLatitude(locs.latitude);
 	loc.setLongitude(locs.longitude);
-	if(lc.distanceTo(loc)<20){
+	if(lc.distanceTo(loc)<2000){
 		return true;				
 	}
 	else return false;

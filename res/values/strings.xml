@@ -12,5 +12,6 @@
     <color name="grey">#C8C8C8</color>
 
     <string name="title_activity_map">MapActivity</string>
+    <string name="title_activity_story">Story</string>
 
 </resources>
