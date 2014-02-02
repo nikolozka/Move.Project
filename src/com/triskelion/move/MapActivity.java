@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -38,8 +39,8 @@ public class MapActivity extends Activity implements LocationListener{
   private ArrayList<Marker> markers = new ArrayList<Marker>();
   private Marker userMarker;
   private double Radius;
-  private int score;
-  private boolean zoom = true;
+  private int score=0;
+  private boolean zoom = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +80,6 @@ public class MapActivity extends Activity implements LocationListener{
   
   OnSeekBarChangeListener barListener = new OnSeekBarChangeListener(){
 	  
-	  Circle circle;
 	  
 	  @Override       
 	    public void onStopTrackingTouch(SeekBar seekBar) {      
@@ -115,7 +115,7 @@ public class MapActivity extends Activity implements LocationListener{
 		  double angle = Math.random()*360;
 		  points.add(new LatLng((lat+(dist*Math.cos(angle))),lon+(dist*Math.sin(angle))));		  
 		  Marker marker = map.addMarker(new MarkerOptions()
-		  .position(points.get(i))
+		  	.position(points.get(i))
 			.icon(BitmapDescriptorFactory.defaultMarker())
 		);
 		  markers.add(marker);
@@ -164,11 +164,12 @@ public void onLocationChanged(Location location) {
     	.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
     	.title("Move."));
     CameraUpdate cameraUpdate;
-    if(!zoom){
+    if(zoom){
     	cameraUpdate= CameraUpdateFactory.newLatLngZoom(latLng, map.getCameraPosition().zoom);
-    	zoom=false;}
+    	}
     else{
-        cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);}
+        cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+        zoom=true;}
 
     map.animateCamera(cameraUpdate);
     userMarker.setPosition(this.location);
@@ -186,12 +187,9 @@ public void onLocationChanged(Location location) {
     		markers.remove(i);
     		points.remove(i);
     		score++;
-    		Context context1 = getApplicationContext();
-    		CharSequence text1 = "score: " + score;
-    		int duration1 = Toast.LENGTH_SHORT;
-
-    		Toast toast1 = Toast.makeText(context1, text1, duration1);
-    		toast.show();
+    		TextView view = (TextView)findViewById(R.id.editText1);
+    		String sscore="score: "+score;
+    		view.setText(sscore);
     	}
     }
 	
