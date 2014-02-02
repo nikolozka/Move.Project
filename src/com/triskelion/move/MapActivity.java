@@ -1,20 +1,32 @@
 package com.triskelion.move;
+import java.util.ArrayList;
+
 import android.app.Activity;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.Toast;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.content.Context;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapActivity extends Activity {
-  static final LatLng HAMBURG = new LatLng(53.558, 9.927);
-  static final LatLng KIEL = new LatLng(53.551, 9.993);
+public class MapActivity extends Activity implements LocationListener{
+  
   private GoogleMap map;
+  private LocationManager locationManager;
+  private static final long MIN_TIME = 400;
+  private static final float MIN_DISTANCE = 1000;
+  private ArrayList<LatLng> locations = new ArrayList<LatLng>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -22,26 +34,57 @@ public class MapActivity extends Activity {
     setContentView(R.layout.activity_map);
     map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
             .getMap();
-    Marker hamburg = map.addMarker(new MarkerOptions().position(HAMBURG)
-            .title("Hamburg"));
-        Marker kiel = map.addMarker(new MarkerOptions()
-            .position(KIEL)
-            .title("Kiel")
-            .snippet("Kiel is cool")
-            .icon(BitmapDescriptorFactory
-                .fromResource(R.drawable.ic_launcher)));
-
-        // Move the camera instantly to hamburg with a zoom of 15.
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(HAMBURG, 15));
-
-        // Zoom in, animating the camera.
-        map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
-      
+    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this); 
+    map.setOnMapClickListener(listener);
   }
+  
+  OnMapClickListener listener = new OnMapClickListener(){
+
+	@Override
+	public void onMapClick(LatLng location) {
+		locations.add(location);
+		Context context = getApplicationContext();
+		CharSequence text = ("added"+location.latitude+" "+location.longitude);
+		int duration = Toast.LENGTH_SHORT;
+
+		Toast toast = Toast.makeText(context, text, duration);
+		toast.show();
+	}
+	  
+  };
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     return true;
   }
+@Override
+public void onLocationChanged(Location location) {
+	// TODO Auto-generated method stub
+    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+    map.addMarker(new MarkerOptions()
+    	.position(latLng)
+    	.icon(BitmapDescriptorFactory.defaultMarker())
+    	.title("Move."));
+    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+    map.animateCamera(cameraUpdate);
+    locationManager.removeUpdates(this);
+	
+}
+@Override
+public void onProviderDisabled(String provider) {
+	// TODO Auto-generated method stub
+	
+}
+@Override
+public void onProviderEnabled(String provider) {
+	// TODO Auto-generated method stub
+	
+}
+@Override
+public void onStatusChanged(String provider, int status, Bundle extras) {
+	// TODO Auto-generated method stub
+	
+}
 
 }
