@@ -20,6 +20,8 @@ private static final String TAG = SnapToRoad.class.getSimpleName();
 private double lat;
 private double lng;
 
+private LatLng latLng=null;
+
 
 
 public SnapToRoad(LatLng location){
@@ -32,7 +34,7 @@ public SnapToRoad(LatLng location){
 protected Void doInBackground(Void... params) {
     Reader rd = null;
     try {
-        URL url = new URL("http://maps.google.com/maps/api/directions/xml?origin="+lat+",0&destination="+lng+",0&sensor=true");
+        URL url = new URL("http://maps.google.com/maps/api/directions/xml?origin="+lat+","+lng+"&destination="+lat+","+lng+"&sensor=true");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setReadTimeout(10000 /* milliseconds */);
         con.setConnectTimeout(15000 /* milliseconds */);
@@ -46,7 +48,9 @@ protected Void doInBackground(Void... params) {
             while ((read = rd.read(buf)) > 0) {
                 sb.append(buf, 0, read);
             }
-            Log.v(TAG, sb.toString());
+            SimpleXmlPullApp pullApp = new SimpleXmlPullApp(sb.toString());
+            latLng=pullApp.pull();
+            //Log.v(TAG, sb.toString());
             
         } 
         con.disconnect();
@@ -63,4 +67,9 @@ protected Void doInBackground(Void... params) {
     }
     return null;
 }
+
+public LatLng getLoc(){
+	return latLng;
+}
+
 }

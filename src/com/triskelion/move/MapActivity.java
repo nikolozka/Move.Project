@@ -45,6 +45,11 @@ public class MapActivity extends Activity implements LocationListener{
 	public void onMapClick(LatLng location) {
 		SnapToRoad snapper = new SnapToRoad(location);
 		snapper.execute();
+		map.addMarker(new MarkerOptions()
+			.position(snapper.getLoc())
+			.icon(BitmapDescriptorFactory.defaultMarker())
+			.title(location.latitude+" "+location.longitude)
+		);
 		
 	}
 	  
